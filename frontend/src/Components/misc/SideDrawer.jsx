@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react'
 import ChatLoading from '../ChatLoading.jsx'
 import UserListItem from '../UserAvatar/UserListItem.jsx'
+import { getSender } from '../../config/ChatLogics.jsx'
 
 const SideDrawer = () => {
 
@@ -27,7 +28,7 @@ const SideDrawer = () => {
 
   const toast = useToast()
   const navigate = useNavigate()
-  const { user, setSelectedChat, chats, setChats } = ChatState()
+  const { user, setSelectedChat, chats, setChats, notification, setNotification } = ChatState()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -127,8 +128,20 @@ const SideDrawer = () => {
           <Menu>
             <MenuButton p={1}>
               <BellIcon fontSize="2xl" m={1} color="orange"/>
+              <span class="badge" style={{color:"orange"}}>{notification.length}</span>
             </MenuButton>
-            {/* <MenuList> <MenuList /> */}
+            <MenuList pl={2}>
+              {!notification.length && "No new Messages"}
+              {notification.map((notif) => (
+                <MenuItem key={notif._id} onClick={() => {
+                  setSelectedChat(notif.chat)
+                  setNotification(notification.filter((n) => n !== notif))
+                }}>
+                  {notif.chat.isGroupChat ? `New Message in ${notif.chat.chatName}`
+                                          : `New Message from ${getSender(user, notif.chat.users)}`}
+                </MenuItem>
+              ))}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>

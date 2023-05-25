@@ -10,6 +10,9 @@ const { all } = require('../routes/userRoute')
 const accessChat = asyncHandler (async (req, res) => {
     const { userId } = req.body
 
+    console.log(userId);
+    console.log(req.user._id);
+
     if(!userId) {
         res.status(400).json({message: "UserId param not send with the request."})
     }
@@ -31,6 +34,8 @@ const accessChat = asyncHandler (async (req, res) => {
         path: "latestMessage.sender",
         select: "name email pic"
     })
+
+    //console.log(isChat);
 
     if(isChat.length > 0) {
         res.send(isChat[0])
