@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { ChatState } from '../Context/chatProvider'
-import { Box, FormControl, IconButton, Input, Spinner, Text, useToast } from '@chakra-ui/react'
+import { Box, FormControl, IconButton, Input, Spinner, Text, useToast, Icon } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { getSender, getFullUser } from '../config/ChatLogics'
 import ProfileModal from './misc/ProfileModal'
 import UpdateGroupChatModal from './misc/UpdateGroupChatModal'
 import axios from 'axios'
 import ScrollableChat from './ScrollableChat'
+import TicTacToe from './misc/TicTacToe'
 import io from 'socket.io-client'
 
 const END_POINT = "http://localhost:5005"
@@ -135,6 +136,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     {!selectedChat.isGroupChat ? (
                       <>
                         <Text color="orange">{getSender(user, selectedChat.users)}</Text>
+                        <TicTacToe socket = { socket }/>
                         <ProfileModal user={getFullUser(user, selectedChat.users)}/>
                       </>
                     ) : (<> 

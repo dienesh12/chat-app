@@ -23,6 +23,27 @@ app.use(errorHandler)
 
 const server = app.listen(PORT, () => console.log(`Server running on ${PORT}!`))
 
+let state = Array(9).fill(''); 
+let currentPlayer = 'X';
+
+
+function checkWinner() {
+  const winningCombinations = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+  ];
+
+  for (let combination of winningCombinations) {
+    const [a, b, c] = combination;
+    if (state[a] && state[a] === state[b] && state[a] === state[c]) {
+      return state[a];
+    }
+  }
+
+  return null;
+}
+
 const io = require('socket.io')(server, {
     pingTimeout: 60000,
     cors: {
@@ -55,5 +76,41 @@ io.on("connection", (socket) => {
             socket.in(user._id).emit("message recieved", newMessageRecieved)
         });
     })
+
+    socket.emit('update', state);
+
+    socket.on('move', (index) => {
+      if (state[index] === '' && currentPlayer) {
+        state[index] = currentPlayer;
+  
+        // Send the updated game state to the client
+        socket.emit('update', state);
+  
+        const winner = checkWinner();
+        if (winner) {
+          // Notify the client about the game result
+          socket.emit('gameOver', winner);
+          state = Array(9).fill('');
+        } else {
+          // Switch the current player
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+      }
+    });
+
+    /*socket.on('join game', (room) => {
+        socket.join(room)
+        console.log(`User joined game with room: ${room}`);
+    })
+
+    socket.on('new move', (obj) => {
+        console.log(obj);
+        console.log(`joined game room ${obj.room}`);
+        const res = {
+            cell: obj.square, 
+            turn: !obj.turn
+        }
+        socket.to(obj.room).emit('updated move', res)
+    })*/
 })
 
