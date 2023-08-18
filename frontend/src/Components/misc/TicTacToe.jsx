@@ -47,7 +47,7 @@ const TicTacToe = ( props ) => {
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
+            <ModalHeader>Tic-Tac-Toe</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Grid socket={ socket }/>
