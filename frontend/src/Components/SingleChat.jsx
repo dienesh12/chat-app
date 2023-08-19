@@ -10,7 +10,7 @@ import ScrollableChat from './ScrollableChat'
 import TicTacToe from './misc/TicTacToe'
 import io from 'socket.io-client'
 
-const END_POINT = "http://localhost:5005"
+const END_POINT = "https://chatter-qfh1.onrender.com"
 var socket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -35,7 +35,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             }
         }
 
-        const { data } = await axios.get(`http://localhost:5005/api/message/${selectedChat._id}`, config)
+        const { data } = await axios.get(`https://chatter-qfh1.onrender.com/api/message/${selectedChat._id}`, config)
 
         console.log(data);
         setMessages(data)
@@ -65,7 +65,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
             setNewMessage("")
 
-            const { data } = await axios.post(`http://localhost:5005/api/message`, {
+            const { data } = await axios.post(`https://chatter-qfh1.onrender.com/api/message`, {
                 chatId: selectedChat._id,
                 content: newMessage
             }, config)
