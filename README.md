@@ -18,6 +18,4 @@
 ![Alt text](./assets/image-5.png)
 
 ## 6) Live Demo
-<video controls width="640" height="360" autoplay>
-    <source src="./assets/video1041129725.mp4" type="video/mp4">
-</video>
+https://github.com/dienesh12/chat-app/assets/84952993/813fb6ae-6a08-4a9c-ae77-d0e70ba02148
