@@ -1,0 +1,23 @@
+# Features
+## 1) Authentication
+<div style="display: flex;">
+    <img src="./assets/image.png" style="width: 50%;" />
+    <img src="./assets/image-1.png" style="width: 50%;" />
+</div>
+
+## 2) Search Users
+![Alt text](./assets/image-2.png)
+
+## 3) Create Group
+![Alt text](./assets/image-3.png)
+
+## 4) Edit, Add, Remove, Leave Group 
+![Alt text](./assets/image-4.png)
+
+## 5) Notification
+![Alt text](./assets/image-5.png)
+
+## 6) Live Demo
+<video controls width="640" height="360" autoplay>
+    <source src="./assets/video1041129725.mp4" type="video/mp4">
+</video>
