@@ -53,7 +53,7 @@ const SignUp = () => {
 
       console.log(pic);
 
-      const { data } = await axios.post("https://chatter-qfh1.onrender.com/api/user", {name, email, password, pic}, config)
+      const { data } = await axios.post("http://localhost:5005/api/user", {name, email, password, pic}, config)
       
       toast({
         title: "Registration Successful!",

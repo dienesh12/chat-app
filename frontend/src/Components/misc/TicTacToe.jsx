@@ -15,7 +15,7 @@ import { GiTicTacToe } from "react-icons/gi";
 import Grid from './Grid';
 import { ChatState } from '../../Context/chatProvider';
 
-const END_POINT = "https://chatter-qfh1.onrender.com"
+const END_POINT = "http://localhost:5005"
 var socket
 
 const TicTacToe = ( props ) => {
