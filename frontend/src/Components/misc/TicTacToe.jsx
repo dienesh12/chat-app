@@ -9,22 +9,25 @@ import {
     IconButton,
     useDisclosure,
     Button,
-    ModalBody
+    ModalBody,
+    useToast
 } from '@chakra-ui/react'
 import { GiTicTacToe } from "react-icons/gi";
 import Grid from './Grid';
 import { ChatState } from '../../Context/chatProvider';
+import axios from 'axios';
 
-const END_POINT = "http://localhost:5005"
 var socket
 
 const TicTacToe = ( props ) => {
+
+  const toast = useToast()
 
   socket = props.socket
 
   console.log(socket);
 
-  const { selectedChat } = ChatState()
+  const { user, selectedChat } = ChatState()
   const roomID = selectedChat._id
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -35,7 +38,24 @@ const TicTacToe = ( props ) => {
     }
   }
 
-  const handleClick = () => {
+  const handleClick = async () => {
+    const users = selectedChat.users
+    const loggedUser = user
+    const userId = users[1]._id === loggedUser._id ? users[0]._id : users[1]._id
+
+    const { data } = await axios.get(`http://localhost:5005/api/user/isActive/${userId}`)
+
+    if(!data.isActive) {
+      toast({
+        title: `${data.name} is Not Active`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top"
+      })
+      return
+    }
+    
     onOpen()
     joinRoom()
   }

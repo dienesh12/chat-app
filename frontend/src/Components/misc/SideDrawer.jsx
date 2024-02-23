@@ -32,8 +32,9 @@ const SideDrawer = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
     localStorage.removeItem("userInfo")
+    await axios.put(`http://localhost:5005/api/user/logout/${user._id}`)
     navigate("/")
   }
 

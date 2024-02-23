@@ -10,7 +10,7 @@ import ScrollableChat from './ScrollableChat'
 import TicTacToe from './misc/TicTacToe'
 import io from 'socket.io-client'
 
-const END_POINT = "http://localhost:5005"
+const END_POINT = "http://localhost:9000"
 var socket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
