@@ -39,18 +39,17 @@ function checkWinner(state) {
 }
 
 io.on("connection", (socket) => {
-    console.log("Connected to Socket.io");
-
+    //console.log("Connected to Socket.io")
     socket.on('setup', (userData) => {
         socket.join(userData._id)
-        console.log(userData._id);
+        //console.log(userData._id);
         socket.emit("Connected")
     })
 
     socket.on('join chat', (room) => {
         socket.join(room)
         roomid = room
-        console.log("User joined room: " + room);
+        //console.log("User joined room: " + room);
     })
 
     socket.on('new message', (newMessageRecieved) => {
@@ -65,6 +64,15 @@ io.on("connection", (socket) => {
     })
 
     //  ---------------------------- Game Socket ------------------------
+
+    socket.on('send request', (data) => {
+      const { name, roomid } = data
+      socket.to(roomid).emit('give response', name)
+    })
+
+    socket.on('request accepted', () => {
+      socket.to(roomid).emit('accept response')
+    })
 
     socket.on('joinGame', (roomid) => {
       if (!roomStates[roomid]) {
