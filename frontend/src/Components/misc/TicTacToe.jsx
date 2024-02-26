@@ -25,20 +25,15 @@ const TicTacToe = ( props ) => {
 
   socket = props.socket
 
-  console.log(socket);
+  // console.log(socket);
 
-  const { user, selectedChat } = ChatState()
+  const { user, selectedChat, currentPlayer, setCurrentPlayer } = ChatState()
   const [opponent, setOpponent] = useState("")
+  const [loading, setLoading] = useState(false)
   const roomID = selectedChat._id
 
   const { isOpen: isOpen1, onOpen: onOpen1, onClose: onClose1 } = useDisclosure()
   const { isOpen: isOpen2, onOpen: onOpen2, onClose: onClose2 } = useDisclosure()
-
-  const joinRoom = () => {
-    if (roomID) {
-      socket.emit('joinGame', roomID);
-    }
-  }
 
   const handleClick = async () => {
     const users = selectedChat.users
@@ -58,6 +53,9 @@ const TicTacToe = ( props ) => {
       return
     }
 
+    setLoading(true)
+    onOpen2()
+
     const val = {
       name: user.name,
       roomid: selectedChat._id
@@ -67,11 +65,20 @@ const TicTacToe = ( props ) => {
   }
 
   const handleJoinGame = () => {
-    onOpen2()
     onClose1()
-    joinRoom()
+    onOpen2()
 
     socket.emit("request accepted")
+  }
+
+  const handleDecline = () => {
+    onClose1()
+    socket.emit('decline request')
+  }
+
+  const handleCloseGame = () => {
+    onClose2()
+    socket.emit('close game', roomID)
   }
 
   useEffect(() => {
@@ -79,12 +86,43 @@ const TicTacToe = ( props ) => {
       setOpponent(name)
       onOpen1()
     })
+  }, [])
+
+  useEffect(() => {
     socket.on('accept response', () => {
-      onOpen2()
       onClose1()
-      joinRoom()
+      setLoading(false)
+      setCurrentPlayer(user._id)
+      onOpen2()
     })
-  })
+  }, [])
+
+  useEffect(() => {
+    socket.on('decline response', () => {
+      toast({
+        title: `${opponent} declined your request`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top"
+      })
+      onClose2()
+    })
+  }, [])
+
+  useEffect(() => {
+    socket.on('close game response', () => {
+      toast({
+        title: `${opponent} closed game`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top"
+      })
+      onClose1()
+      onClose2()
+    })
+  }, [])
 
   return (
     <>
@@ -100,7 +138,7 @@ const TicTacToe = ( props ) => {
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleJoinGame}>Join Game</Button>
-            <Button onClick={onClose1}>Decline</Button>
+            <Button onClick={handleDecline}>Decline</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -112,10 +150,13 @@ const TicTacToe = ( props ) => {
             <ModalHeader>Tic-Tac-Toe</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Grid socket={ socket }/>
+              {
+                loading ? <h1>Waiting for {(selectedChat.users[1]._id === user._id) ? selectedChat.users[0].name : selectedChat.users[1].name}...</h1>
+                        : <Grid socket={ socket }/>
+              }
             </ModalBody>
             <ModalFooter>
-                <Button colorScheme='blue' mr={3} onClick={onClose2}>
+                <Button colorScheme='blue' mr={3} onClick={handleCloseGame}>
                 Close
                 </Button>
             </ModalFooter>

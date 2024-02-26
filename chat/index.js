@@ -74,40 +74,26 @@ io.on("connection", (socket) => {
       socket.to(roomid).emit('accept response')
     })
 
-    socket.on('joinGame', (roomid) => {
-      if (!roomStates[roomid]) {
-        roomStates[roomid] = Array(9).fill('');
-      }
-  
-      if (!roomCurrentPlayers[roomid]) {
-        roomCurrentPlayers[roomid] = 'X';
-      }
-  
-      socket.emit('update', roomStates[roomid]);
-      // To restrict a player not to play in other players turn
-      socket.emit('currentPlayer', roomCurrentPlayers[roomid]);
-    });
+    socket.on('decline request', () => {
+      socket.to(roomid).emit('decline response')
+    })
+
+    socket.on('close game', () => {
+      socket.to(roomid).emit('close game response')
+    })
   
     socket.on('move', (data) => {
       //console.log(data);
-      const { roomid, index } = data;
-      const board = roomStates[roomid];
-      const currentPlayer = roomCurrentPlayers[roomid];
+      const { roomid, index, board, value } = data;
+      board[index] = value
+
+      socket.to(roomid).emit('update', board);
   
-      if (board[index] === '') {
-        board[index] = currentPlayer;
-  
-        io.to(roomid).emit('update', board);
-        roomCurrentPlayers[roomid] = currentPlayer === 'X' ? 'O' : 'X';
-        io.to(roomid).emit('currentPlayer', roomCurrentPlayers[roomid]);
-  
-        const winner = checkWinner(board);
-        if (winner) {
-          io.to(roomid).emit('gameOver', winner);
-          roomStates[roomid] = Array(9).fill('');
-          roomCurrentPlayers[roomid] = 'X';
-        }
+      const winner = checkWinner(board);
+      if (winner) {
+        io.to(roomid).emit('gameOver', winner);
       }
+
     });
   
     socket.on('disconnect', () => {

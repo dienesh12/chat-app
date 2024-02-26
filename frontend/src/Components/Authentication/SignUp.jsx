@@ -51,7 +51,6 @@ const SignUp = () => {
         }
       }
 
-      console.log(pic);
 
       const { data } = await axios.post("http://localhost:5005/api/user", {name, email, password, pic}, config)
       
@@ -85,7 +84,7 @@ const SignUp = () => {
   const postPic = (pics) => {
       setLoading(true)
       
-      console.log(pics)
+      // console.log(pics)
 
       if(pics === undefined) {
         toast({
@@ -99,7 +98,7 @@ const SignUp = () => {
         return
       }
 
-      console.log(pics)
+      // console.log(pics)
   
       if(pics.type === "image/jpeg" || pics.type === "image/png") {
         const data = new FormData()
@@ -112,17 +111,17 @@ const SignUp = () => {
         })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          // console.log(data);
           setPic(data.url.toString())
-          console.log(data.url.toString());
+          // console.log(data.url.toString());
           setLoading(false)
         })
         .catch((err) => {
-          console.log(err)
+          // console.log(err)
           setLoading(false)
         })
       } else {
-          console.log("second")
+          // console.log("second")
           toast({
             title: "Please Select an Image!",
             status: "warning",
