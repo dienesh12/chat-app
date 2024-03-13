@@ -16,15 +16,14 @@ import { GiTicTacToe } from "react-icons/gi";
 import Grid from './Grid';
 import { ChatState } from '../../Context/chatProvider';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 
 var socket
 
-const TicTacToe = ( props ) => {
+const TicTacToe = (props) => {
 
   const toast = useToast()
-
-  socket = props.socket
-
+  socket = props.gameSocket
   // console.log(socket);
 
   const { user, selectedChat, currentPlayer, setCurrentPlayer } = ChatState()
@@ -67,13 +66,12 @@ const TicTacToe = ( props ) => {
   const handleJoinGame = () => {
     onClose1()
     onOpen2()
-
-    socket.emit("request accepted")
+    socket.emit("request accepted", roomID)
   }
 
   const handleDecline = () => {
     onClose1()
-    socket.emit('decline request')
+    socket.emit('decline request', roomID)
   }
 
   const handleCloseGame = () => {
@@ -83,6 +81,7 @@ const TicTacToe = ( props ) => {
 
   useEffect(() => {
     socket.on('give response', (name) => {
+      console.log("socket reached")
       setOpponent(name)
       onOpen1()
     })

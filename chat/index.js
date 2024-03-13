@@ -6,6 +6,21 @@ require("dotenv").config()
 const app = express()
 const PORT = process.env.PORT || 9000
 
+app.use(express.json())
+
+app.get('/', (req, res) => {
+  res.status(200).json({message: "ok"})
+})
+
+// app.post('/webhook', express.json({type: 'application/json'}), (req, res) => {
+//   res.status(202).send("Accepted")
+
+//   const gitHubEvent = req.headers['x-github-event']
+
+//   const data = req
+//   console.log(data)
+// })
+
 const httpServer = app.listen(PORT, () => {
     console.log(`Chat Server is up and running on PORT ${PORT}!`)
 })
@@ -17,9 +32,8 @@ const io = new Server(httpServer, {
     }
 })
 
-const roomStates = {};
-const roomCurrentPlayers = {};
-let roomid
+const chatSocket = io.of('/chat')
+const gameSocket = io.of('/game')
 
 function checkWinner(state) {
   const winningCombinations = [
@@ -38,65 +52,77 @@ function checkWinner(state) {
   return null;
 }
 
-io.on("connection", (socket) => {
+// ---------------------------- Chat Socket ------------------------
+
+chatSocket.on("connection", (socket) => {
     //console.log("Connected to Socket.io")
-    socket.on('setup', (userData) => {
-        socket.join(userData._id)
-        //console.log(userData._id);
-        socket.emit("Connected")
-    })
+  socket.on('setup', (userData) => {
+      socket.join(userData._id)
+      //console.log(userData._id);
+      socket.emit("Connected")
+  })
 
-    socket.on('join chat', (room) => {
-        socket.join(room)
-        roomid = room
-        //console.log("User joined room: " + room);
-    })
+  socket.on('join chat', (room) => {
+    socket.join(room)
+    console.log("User joined room: " + room);
+  })
 
-    socket.on('new message', (newMessageRecieved) => {
-        var chat = newMessageRecieved.chat
+  socket.on('new message', (newMessageRecieved) => {
+    var chat = newMessageRecieved.chat
 
-        if(!chat.users) return console.log("chat.users not defined");
+    if(!chat.users) return console.log("chat.users not defined");
 
-        chat.users.forEach(user => {
-            if(user._id === newMessageRecieved.sender._id) return 
-            socket.in(user._id).emit("message recieved", newMessageRecieved)
-        });
-    })
+    chat.users.forEach(user => {
+      if(user._id === newMessageRecieved.sender._id) return 
+        socket.in(user._id).emit("message recieved", newMessageRecieved)
+      });
+  })
 
-    //  ---------------------------- Game Socket ------------------------
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+})
 
-    socket.on('send request', (data) => {
-      const { name, roomid } = data
-      socket.to(roomid).emit('give response', name)
-    })
+// ---------------------------- Game Socket ------------------------
 
-    socket.on('request accepted', () => {
-      socket.to(roomid).emit('accept response')
-    })
+gameSocket.on("connection", (socket) => {
 
-    socket.on('decline request', () => {
-      socket.to(roomid).emit('decline response')
-    })
-
-    socket.on('close game', () => {
-      socket.to(roomid).emit('close game response')
-    })
+  socket.on('join game', (room) => {
+    socket.join(room)
+    console.log("User joined room: " + room);
+  })
   
-    socket.on('move', (data) => {
-      //console.log(data);
-      const { roomid, index, board, value } = data;
-      board[index] = value
+  socket.on('send request', (data) => {
+    const { name, roomid } = data
+    socket.to(roomid).emit('give response', name)
+  })
 
-      socket.to(roomid).emit('update', board);
-  
-      const winner = checkWinner(board);
-      if (winner) {
-        io.to(roomid).emit('gameOver', winner);
-      }
+  socket.on('request accepted', (data) => {
+    socket.to(data).emit('accept response')
+  })
 
-    });
+  socket.on('decline request', (data) => {
+    socket.to(data).emit('decline response')
+  })
+
+  socket.on('close game', (data) => {
+    socket.to(data).emit('close game response')
+  })
+
+  socket.on('move', (data) => {
+    //console.log(data);
+    const { roomid, index, board, value } = data;
+    board[index] = value
+    socket.to(roomid).emit('update', board);
+
+    const winner = checkWinner(board);
+    if (winner) {
+      gameSocket.to(roomid).emit('gameOver', winner);
+    }
+
+  });
   
-    socket.on('disconnect', () => {
-      console.log('A user disconnected');
-    });
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
 })
