@@ -1,36 +1,46 @@
 import React, { useEffect, useState } from 'react'
 import Square from './Square'
-import { Socket } from 'socket.io-client';
 import { ChatState } from '../../Context/chatProvider';
 
 const Grid = (props) => {
 
   const socket = props.socket
 
-  const { selectedChat } = ChatState()
+  const { user, selectedChat, currentPlayer, setCurrentPlayer } = ChatState()
   const roomID = selectedChat._id
+  const users = selectedChat.users
+  let value = (users[1]._id === user._id) ? 'X' : 'O'
+  const oppId = users[1]._id === user._id ? users[0]._id : users[1]._id
 
   const [board, setBoard] = useState(Array(9).fill(''));
-  const [currentPlayer, setCurrentPlayer] = useState('X');
 
   const updateSqaure = ( index ) => {
-    if (board[index] === '') {
+    // console.log("user._id: ", user._id, "current: ", currentPlayer)
+    if (board[index] === '' && user._id === currentPlayer) {
+      //console.log(board)
       const roomid = roomID
-      socket.emit('move', {roomid, index});
+      //console.log(user._id, oppId)
+      setBoard(board)
+      setCurrentPlayer(oppId)
+      board[index] = value
+      socket.emit('move', {roomid, index, board, value});
     }
   }
 
   useEffect(() => {
     socket.on('update', (state) => {
+      //console.log("update called")
       setBoard(state);
+      setCurrentPlayer(user._id)
     });
+  }, []);
 
+  useEffect(() => {
     socket.on('gameOver', (winner) => {
       alert(`Game over! Winner: ${winner}`);
       setBoard(Array(9).fill(''));
     });
-
-  }, []);
+  }, [])
 
   return (
     <>

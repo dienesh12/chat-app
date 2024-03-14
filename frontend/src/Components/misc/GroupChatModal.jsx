@@ -43,9 +43,9 @@ const GroupChatModal = ({ children }) => {
             }
         }
 
-        const { data } = await axios.get(`https://chatter-qfh1.onrender.com/api/user?search=${search}`, config)
+        const { data } = await axios.get(`http://localhost:5005/api/user?search=${search}`, config)
 
-        console.log(data)
+        // console.log(data)
         setLoading(false)
         setSearchResult(data)
     } catch (error) {
@@ -79,7 +79,7 @@ const GroupChatModal = ({ children }) => {
             }
         }
 
-        const { data } = await axios.post(`https://chatter-qfh1.onrender.com/api/chat/group`, {
+        const { data } = await axios.post(`http://localhost:5005/api/chat/group`, {
             name: groupChatName,
             users: JSON.stringify(selectedUsers.map((u) => u._id))
         }, config)

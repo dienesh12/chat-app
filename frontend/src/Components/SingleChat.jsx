@@ -10,8 +10,9 @@ import ScrollableChat from './ScrollableChat'
 import TicTacToe from './misc/TicTacToe'
 import io from 'socket.io-client'
 
-const END_POINT = "https://chatter-qfh1.onrender.com"
-var socket, selectedChatCompare
+const END_POINT_CHAT = "http://localhost:9000/chat"
+const END_POINT_GAME = "http://localhost:9000/game"
+var chatSocket, gameSocket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
@@ -35,12 +36,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             }
         }
 
-        const { data } = await axios.get(`https://chatter-qfh1.onrender.com/api/message/${selectedChat._id}`, config)
+        const { data } = await axios.get(`http://localhost:5005/api/message/${selectedChat._id}`, config)
 
-        console.log(data);
+
         setMessages(data)
         setLoading(false)
-        socket.emit('join chat', selectedChat._id)
+        chatSocket.emit('join chat', selectedChat._id)
+        gameSocket.emit('join game', selectedChat._id)
     } catch (error) {
         toast({
             title: "Error Occured",
@@ -65,13 +67,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
             setNewMessage("")
 
-            const { data } = await axios.post(`https://chatter-qfh1.onrender.com/api/message`, {
+            const { data } = await axios.post(`http://localhost:5005/api/message`, {
                 chatId: selectedChat._id,
                 content: newMessage
             }, config)
 
             setMessages([...messages, data])
-            socket.emit("new message", data)
+            chatSocket.emit("new message", data)
         } catch (error) {
             toast({
                 title: "Error Occured",
@@ -86,9 +88,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }
 
   useEffect(() => {
-    socket = io(END_POINT)
-    socket.emit("setup", user)
-    socket.on("connection", () => setSocketConnected(true))
+    chatSocket = io(END_POINT_CHAT)
+    gameSocket = io(END_POINT_GAME)
+    chatSocket.emit("setup", user)
+    chatSocket.on("connection", () => setSocketConnected(true))
   }, [])
 
   const typingHandler = (e) => {
@@ -101,7 +104,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]) //Whenever user changes the chat it is called.
 
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
+    chatSocket.on("message recieved", (newMessageRecieved) => {
         if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
             if(!notification.includes(newMessageRecieved)) {
                 setNotification([newMessageRecieved, ...notification])
@@ -136,7 +139,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     {!selectedChat.isGroupChat ? (
                       <>
                         <Text color="orange">{getSender(user, selectedChat.users)}</Text>
-                        <TicTacToe socket = { socket }/>
+                        <TicTacToe gameSocket = { gameSocket }/>
                         <ProfileModal user={getFullUser(user, selectedChat.users)}/>
                       </>
                     ) : (<> 

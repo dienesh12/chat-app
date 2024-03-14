@@ -32,8 +32,9 @@ const SideDrawer = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
     localStorage.removeItem("userInfo")
+    await axios.put(`http://localhost:5005/api/user/logout/${user._id}`)
     navigate("/")
   }
 
@@ -58,9 +59,9 @@ const SideDrawer = () => {
         },
       }
 
-      const { data } = await axios.get(`https://chatter-qfh1.onrender.com/api/user?search=${search}`, config)
+      const { data } = await axios.get(`http://localhost:5005/api/user?search=${search}`, config)
 
-      console.log(data)
+      // console.log(data)
       setLoading(false)
       setSearchResult(data)
     } catch(error) {
@@ -86,7 +87,7 @@ const SideDrawer = () => {
         },
       }
 
-      const { data } = await axios.post(`https://chatter-qfh1.onrender.com/api/chat`, { userId }, config)
+      const { data } = await axios.post(`http://localhost:5005/api/chat`, { userId }, config)
 
       if(!chats.find((c) => c._id === data._id)) setChats([data, ...chats])
       setSelectedChat(data)
