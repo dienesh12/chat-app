@@ -12,15 +12,6 @@ app.get('/', (req, res) => {
   res.status(200).json({message: "ok"})
 })
 
-// app.post('/webhook', express.json({type: 'application/json'}), (req, res) => {
-//   res.status(202).send("Accepted")
-
-//   const gitHubEvent = req.headers['x-github-event']
-
-//   const data = req
-//   console.log(data)
-// })
-
 const httpServer = app.listen(PORT, () => {
     console.log(`Chat Server is up and running on PORT ${PORT}!`)
 })
