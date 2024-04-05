@@ -3,10 +3,26 @@ import ScrollableFeed from 'react-scrollable-feed'
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from '../config/ChatLogics'
 import { ChatState } from '../Context/chatProvider'
 import { Avatar, Tooltip } from '@chakra-ui/react'
+import CryptoJS from 'crypto-js'
 
 const ScrollableChat = ({ messages }) => {
 
-  const { user } = ChatState()
+  const { user, selectedChat } = ChatState()
+
+  const decryptData = (encryptedMessage) => {
+    const chatId = selectedChat._id
+
+    const key = CryptoJS.enc.Utf8.parse(chatId)
+    const iv1 = CryptoJS.enc.Utf8.parse(chatId)
+    const message = CryptoJS.AES.decrypt(encryptedMessage, key, {
+        keySize: 16,
+        iv: iv1,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    })
+
+    return message.toString(CryptoJS.enc.Utf8);
+  }
 
   return (
     <ScrollableFeed className='scroll'>
@@ -36,7 +52,7 @@ const ScrollableChat = ({ messages }) => {
                 marginLeft: isSameSenderMargin(messages, msg, ind, user._id),
                 marginTop: isSameUser(messages, msg, ind)
               }}>
-                { msg.content }
+                { decryptData(msg.content) }
               </span>
             </div>
         ))}

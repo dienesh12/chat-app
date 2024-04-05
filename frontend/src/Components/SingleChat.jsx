@@ -9,6 +9,7 @@ import axios from 'axios'
 import ScrollableChat from './ScrollableChat'
 import TicTacToe from './misc/TicTacToe'
 import io from 'socket.io-client'
+import CryptoJS from 'crypto-js'
 
 const END_POINT_CHAT = "http://localhost:9000/chat"
 const END_POINT_GAME = "http://localhost:9000/game"
@@ -67,9 +68,22 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
             setNewMessage("")
 
+            const chatId = selectedChat._id
+
+            const key = CryptoJS.enc.Utf8.parse(chatId)
+            const iv1 = CryptoJS.enc.Utf8.parse(chatId)
+            const encrypted = CryptoJS.AES.encrypt(newMessage, key, {
+                keySize: 16,
+                iv: iv1,
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7
+            })
+
+            const encryptedMessage = encrypted + ""
+
             const { data } = await axios.post(`http://localhost:5005/api/message`, {
                 chatId: selectedChat._id,
-                content: newMessage
+                content: encryptedMessage
             }, config)
 
             setMessages([...messages, data])
