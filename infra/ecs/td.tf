@@ -3,7 +3,7 @@ resource "aws_ecs_task_definition" "backend-service" {
   container_definitions = jsonencode([
     {
       name      = "backend-service"
-      image     = "058264220203.dkr.ecr.us-east-1.amazonaws.com/chatapp-backend"
+      image     = ""
       cpu       = 10
       memory    = 1024
       essential = true
@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "chat-service" {
   container_definitions = jsonencode([
     {
       name      = "chat-service"
-      image     = "058264220203.dkr.ecr.us-east-1.amazonaws.com/socket-server"
+      image     = ""
       cpu       = 10
       memory    = 512
       essential = true
