@@ -67,7 +67,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
                 }
             }
 
-            const { data } = await axios.put(`http://localhost:5005/api/chat/add`, {
+            const { data } = await axios.put(`${process.env.REACT_APP_BACK_URL}/api/chat/add`, {
                 chatId: selectedChat._id,
                 userId: userToAdd._id
             }, config)
@@ -109,7 +109,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
                 }
             }
             
-            const { data } = await axios.put(`http://localhost:5005/api/chat/remove`, {
+            const { data } = await axios.put(`${process.env.REACT_APP_BACK_URL}/api/chat/remove`, {
                 chatId: selectedChat._id,
                 userId: userToRemove._id
             }, config)
@@ -143,7 +143,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
                 }
             }
 
-            const { data } = await axios.put(`http://localhost:5005/api/chat/rename`, {
+            const { data } = await axios.put(`${process.env.REACT_APP_BACK_URL}/api/chat/rename`, {
                 chatID: selectedChat._id,
                 chatName: groupChatName
             }, config)
@@ -180,7 +180,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
                 }
             }
     
-            const { data } = await axios.get(`http://localhost:5005/api/user?search=${search}`, config)
+            const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/user?search=${search}`, config)
     
             setLoading(false)
             setSearchResult(data)

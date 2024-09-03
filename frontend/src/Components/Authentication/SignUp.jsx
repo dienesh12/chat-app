@@ -52,7 +52,7 @@ const SignUp = () => {
       }
 
 
-      const { data } = await axios.post("http://localhost:5005/api/user", {name, email, password, pic}, config)
+      const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/user`, {name, email, password, pic}, config)
       
       toast({
         title: "Registration Successful!",

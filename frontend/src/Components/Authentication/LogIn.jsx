@@ -34,7 +34,7 @@ const Login = () => {
         }
       }
 
-      const { data } = await axios.post("http://localhost:5005/api/user/login", { email, password }, config)
+      const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/user/login`, { email, password }, config)
       
       toast({
         title: "Login Successful!",

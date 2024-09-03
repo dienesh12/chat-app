@@ -34,7 +34,7 @@ const SideDrawer = () => {
 
   const logoutHandler = async () => {
     localStorage.removeItem("userInfo")
-    await axios.put(`http://localhost:5005/api/user/logout/${user._id}`)
+    await axios.put(`${process.env.REACT_APP_BACK_URL}/api/user/logout/${user._id}`)
     navigate("/")
   }
 
@@ -59,7 +59,7 @@ const SideDrawer = () => {
         },
       }
 
-      const { data } = await axios.get(`http://localhost:5005/api/user?search=${search}`, config)
+      const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/user?search=${search}`, config)
 
       // console.log(data)
       setLoading(false)
@@ -87,7 +87,7 @@ const SideDrawer = () => {
         },
       }
 
-      const { data } = await axios.post(`http://localhost:5005/api/chat`, { userId }, config)
+      const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/chat`, { userId }, config)
 
       if(!chats.find((c) => c._id === data._id)) setChats([data, ...chats])
       setSelectedChat(data)

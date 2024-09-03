@@ -11,8 +11,6 @@ import TicTacToe from './misc/TicTacToe'
 import io from 'socket.io-client'
 import CryptoJS from 'crypto-js'
 
-const END_POINT_CHAT = "http://localhost:9000/chat"
-const END_POINT_GAME = "http://localhost:9000/game"
 var chatSocket, gameSocket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -37,7 +35,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             }
         }
 
-        const { data } = await axios.get(`http://localhost:5005/api/message/${selectedChat._id}`, config)
+        const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/message/${selectedChat._id}`, config)
 
 
         setMessages(data)
@@ -81,7 +79,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
             const encryptedMessage = encrypted + ""
 
-            const { data } = await axios.post(`http://localhost:5005/api/message`, {
+            const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/message`, {
                 chatId: selectedChat._id,
                 content: encryptedMessage
             }, config)
@@ -102,8 +100,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }
 
   useEffect(() => {
-    chatSocket = io(END_POINT_CHAT)
-    gameSocket = io(END_POINT_GAME)
+    chatSocket = io(process.env.REACT_APP_END_POINT_CHAT)
+    gameSocket = io(process.env.REACT_APP_END_POINT_GAME)
     chatSocket.emit("setup", user)
     chatSocket.on("connection", () => setSocketConnected(true))
   }, [])
