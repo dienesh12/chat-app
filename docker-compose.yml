@@ -1,11 +1,24 @@
 services:
   backend:
-    build: ./backend
+    image: chatapp-backend:latest
     ports:
       - 5005:5005
+    environment:
+      - MONGO_URI={MONGO_URI}
+      - JWT_SECRET={JWT_SECRET}
   frontend:
-    build: ./frontend
+    image: chat-new-frontend:latest
     ports:
       - 3000:80
+    environment:
+      - REACT_APP_BACK_URL={REACT_APP_BACK_URL}
+      - REACT_APP_END_POINT_CHAT={REACT_APP_END_POINT_CHAT}
+      - REACT_APP_END_POINT_GAME={REACT_APP_END_POINT_GAME}
     depends_on:
       - backend
+      - socket
+  socket:
+    image: chatapp-socket:latest
+    ports:
+      - 9000:9000
+  

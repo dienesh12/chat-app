@@ -39,7 +39,7 @@ const TicTacToe = (props) => {
     const loggedUser = user
     const userId = users[1]._id === loggedUser._id ? users[0]._id : users[1]._id
 
-    const { data } = await axios.get(`http://localhost:5005/api/user/isActive/${userId}`)
+    const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/user/isActive/${userId}`)
 
     if(!data.isActive) {
       toast({
